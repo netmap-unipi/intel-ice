@@ -26,9 +26,9 @@ ifneq ($(KERNELRELEASE),)
 ccflags-y += -I$(src)
 subdir-ccflags-y += -I$(src)
 
-obj-m += ice.o
+obj-m += ice$(NETMAP_DRIVER_SUFFIX).o
 
-ice-y := ice_main.o	\
+ice$(NETMAP_DRIVER_SUFFIX)-y := ice_main.o	\
 	 ice_controlq.o	\
 	 ice_common.o	\
 	 ice_nvm.o	\
@@ -57,32 +57,33 @@ ice-y := ice_main.o	\
 	 ice_fwlog.o		\
 	 ice_ieps.o		\
 	 ice_ethtool.o
-ice-$(CONFIG_NET_DEVLINK:m=y) += ice_devlink.o ice_fw_update.o
-ice-$(CONFIG_NET_DEVLINK:m=y) += ice_eswitch.o ice_repr.o
-ice-y += ice_idc.o
-ice-$(CONFIG_DEBUG_FS) += ice_debugfs.o
-ice-$(CONFIG_PCI_IOV) += ice_virtchnl_allowlist.o
-ice-$(CONFIG_PCI_IOV) += ice_dcf.o
-ice-$(CONFIG_PCI_IOV) += ice_virtchnl_fdir.o
-ice-$(CONFIG_PCI_IOV) +=	\
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_NET_DEVLINK:m=y) += ice_devlink.o ice_fw_update.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_NET_DEVLINK:m=y) += ice_eswitch.o ice_repr.o
+ice$(NETMAP_DRIVER_SUFFIX)-y += ice_idc.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_DEBUG_FS) += ice_debugfs.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_PCI_IOV) += ice_virtchnl_allowlist.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_PCI_IOV) += ice_dcf.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_PCI_IOV) += ice_virtchnl_fdir.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_PCI_IOV) +=	\
 	ice_sriov.o		\
 	ice_vf_mbx.o		\
 	ice_vf_vsi_vlan_ops.o	\
 	ice_vf_adq.o		\
 	ice_virtchnl.o		\
 	ice_vf_lib.o
-ice-$(CONFIG_PTP_1588_CLOCK:m=y) += ice_ptp.o ice_ptp_hw.o
-ice-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
-ice-$(CONFIG_RFS_ACCEL) += ice_arfs.o
-ice-$(CONFIG_XDP_SOCKETS) += ice_xsk.o
-ice-y += kcompat.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_PTP_1588_CLOCK:m=y) += ice_ptp.o ice_ptp_hw.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_RFS_ACCEL) += ice_arfs.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_RFS_ACCEL) += ice_arfs.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_XDP_SOCKETS) += ice_xsk.o
+ice$(NETMAP_DRIVER_SUFFIX)-y += kcompat.o
 # Use kcompat pldmfw.c if kernel does not provide CONFIG_PLDMFW
 ifndef CONFIG_PLDMFW
-ice-y += kcompat_pldmfw.o
+ice$(NETMAP_DRIVER_SUFFIX)-y += kcompat_pldmfw.o
 endif
 # Use kcompat DIMLIB if kernel doesn't provide it
 ifndef CONFIG_DIMLIB
-ice-y += kcompat_dim.o kcompat_net_dim.o
+ice$(NETMAP_DRIVER_SUFFIX)-y += kcompat_dim.o kcompat_net_dim.o
 endif
 
 ifeq (${NEED_AUX_BUS},2)
@@ -92,7 +93,7 @@ endif
 else	# ifneq($(KERNELRELEASE),)
 # normal makefile
 
-DRIVER := ice
+DRIVER := ice$(NETMAP_DRIVER_SUFFIX)
 
 COMMON_MK ?= $(wildcard common.mk)
 ifeq (${COMMON_MK},)
@@ -119,7 +120,7 @@ endif
 
 all:
 	+$(call kernelbuild,modules)
-	@gzip -c ../${DRIVER}.${MANSECTION} > ${DRIVER}.${MANSECTION}.gz
+	##@gzip -c ../${DRIVER}.${MANSECTION} > ${DRIVER}.${MANSECTION}.gz
 ifneq ($(wildcard lttng),)
 	$(MAKE) -C lttng
 endif
