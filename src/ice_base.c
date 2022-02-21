@@ -6,6 +6,11 @@
 #include "ice_dcb_lib.h"
 #include "ice_sriov.h"
 
+#if defined(CONFIG_NETMAP) || defined(CONFIG_NETMAP_MODULE)
+#define NETMAP_ICE_BASE
+#include <ice_netmap_linux.h>
+#endif
+
 /**
  * __ice_vsi_get_qs_contig - Assign a contiguous chunk of queues to VSI
  * @qs_cfg: gathered variables needed for PF->VSI queues assignment
@@ -461,6 +466,10 @@ static int ice_setup_rx_ctx(struct ice_ring *ring)
 	/* Rx queue threshold in units of 64 */
 	rlan_ctx.lrxqthresh = 1;
 
+#ifdef DEV_NETMAP
+	ice_netmap_preconfigure_rx_ring(ring, &rlan_ctx);
+#endif /* DEV_NETMAP */
+
 	/* Enable Flexible Descriptors in the queue context which
 	 * allows this driver to select a specific receive descriptor format
 	 * increasing context priority to pick up profile ID; default is 0x01;
@@ -617,6 +626,11 @@ int ice_vsi_cfg_rxq(struct ice_ring *ring)
 		return 0;
 	}
 #endif /* HAVE_AF_XDP_ZC_SUPPORT */
+    
+#ifdef DEV_NETMAP
+	if (ice_netmap_configure_rx_ring(ring))
+	    return 0;
+#endif /* DEV_NETMAP */
 
 	ice_alloc_rx_bufs(ring, num_bufs);
 
@@ -889,6 +903,10 @@ ice_vsi_cfg_txq(struct ice_vsi *vsi, struct ice_ring *tx_ring,
 	txq = &qg_buf->txqs[0];
 	if (pf_q == le16_to_cpu(txq->txq_id))
 		tx_ring->txq_teid = le32_to_cpu(txq->q_teid);
+    
+#ifdef DEV_NETMAP
+	ice_netmap_configure_tx_ring(ring);
+#endif /* DEV_NETMAP */
 
 	return 0;
 }
