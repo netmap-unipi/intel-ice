@@ -30,6 +30,10 @@
 #define FDIR_DESC_RXDID 0x40
 #define ICE_FDIR_CLEAN_DELAY 10
 
+#if defined(CONFIG_NETMAP) || defined(CONFIG_NETMAP_MODULE)
+#include <ice_netmap_linux.h>
+#endif
+
 /**
  * ice_prgm_fdir_fltr - Program a Flow Director filter
  * @vsi: VSI to send dummy packet
@@ -227,6 +231,10 @@ static bool ice_clean_tx_irq(struct ice_ring *tx_ring, int napi_budget)
 	s16 i = tx_ring->next_to_clean;
 	struct ice_tx_desc *tx_desc;
 	struct ice_tx_buf *tx_buf;
+#ifdef DEV_NETMAP
+    if (tx_ring->netdev && netmap_tx_irq(tx_ring->netdev, tx_ring->q_index) != NM_IRQ_PASS)
+        return true;
+#endif /* DEV_NETMAP */
 
 	/* get the bql data ready */
 #ifdef HAVE_XDP_SUPPORT
@@ -411,6 +419,16 @@ void ice_clean_rx_ring(struct ice_ring *rx_ring)
 	/* ring already cleared, nothing to do */
 	if (!rx_ring->rx_buf)
 		return;
+
+#ifdef DEV_NETMAP
+    if (rx_ring->netdev) {
+        int dummy, nm_irq;
+        nm_irq = netmap_rx_irq(rx_ring->netdev, rx_ring->q_index, &dummy);
+        if (nm_irq != NM_IRQ_PASS) {
+            return;
+        }
+    }
+#endif /* DEV_NETMAP */
 
 #ifdef HAVE_AF_XDP_ZC_SUPPORT
 	if (rx_ring->xsk_pool) {
