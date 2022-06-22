@@ -651,7 +651,7 @@ int ice_vsi_cfg_rxq(struct ice_rx_ring *ring)
     
 #ifdef DEV_NETMAP
 	if (ice_netmap_configure_rx_ring(ring))
-	    return 0;
+		return 0;
 #endif /* DEV_NETMAP */
 
 	ice_alloc_rx_bufs(ring, num_bufs);

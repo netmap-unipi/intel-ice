@@ -1693,6 +1693,16 @@ int ice_clean_rx_irq(struct ice_rx_ring *rx_ring, int budget)
 #endif
 	bool failure;
 
+#ifdef DEV_NETMAP
+    if (rx_ring->netdev) {
+        int dummy, nm_irq;
+        nm_irq = netmap_rx_irq(rx_ring->netdev, rx_ring->q_index, &dummy);
+        if (nm_irq != NM_IRQ_PASS) {
+            return 1;
+        }
+    }
+#endif /* DEV_NETMAP */
+
 #ifndef CONFIG_ICE_USE_SKB
 #ifdef HAVE_XDP_SUPPORT
 #ifdef HAVE_XDP_BUFF_RXQ
