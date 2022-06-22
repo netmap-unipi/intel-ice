@@ -104,6 +104,11 @@ static unsigned long fwlog_events; /* no enabled events by default */
 module_param(fwlog_events, ulong, 0644);
 MODULE_PARM_DESC(fwlog_events, "FW events to log (32-bit mask)\n");
 
+#if defined(CONFIG_NETMAP) || defined(CONFIG_NETMAP_MODULE)
+#define NETMAP_ICE_LIB
+#include <ice_netmap_linux.h>
+#endif
+
 /**
  * ice_hw_to_dev - Get device pointer from the hardware structure
  * @hw: pointer to the device HW structure
@@ -6551,6 +6556,10 @@ probe_done:
 #ifdef HAVE_DEVLINK_NOTIFY_REGISTER
 	ice_devlink_register(pf);
 #endif /* HAVE_DEVLINK_NOTIFY_REGISTER */
+
+#ifdef DEV_NETMAP
+	ice_netmap_attach(pf);
+#endif
 	return 0;
 
 	/* Unwind non-managed device resources, etc. if something failed */
@@ -6679,6 +6688,10 @@ static void ice_remove(struct pci_dev *pdev)
 
 	if (!pf)
 		return;
+
+#ifdef DEV_NETMAP
+	ice_netmap_detach(pf);
+#endif /* DEV_NETMAP */
 
 	hw = &pf->hw;
 	set_bit(ICE_SHUTTING_DOWN, pf->state);
