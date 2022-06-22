@@ -467,7 +467,7 @@ static int ice_setup_rx_ctx(struct ice_ring *ring)
 	rlan_ctx.lrxqthresh = 1;
 
 #ifdef DEV_NETMAP
-    ice_netmap_preconfigure_rx_ring(ring, &rlan_ctx);
+	ice_netmap_preconfigure_rx_ring(ring, &rlan_ctx);
 #endif /* DEV_NETMAP */
 
 	/* Enable Flexible Descriptors in the queue context which
@@ -628,8 +628,8 @@ int ice_vsi_cfg_rxq(struct ice_ring *ring)
 #endif /* HAVE_AF_XDP_ZC_SUPPORT */
     
 #ifdef DEV_NETMAP
-    if (ice_netmap_configure_rx_ring(ring))
-        return 0;
+	if (ice_netmap_configure_rx_ring(ring))
+		return 0;
 #endif /* DEV_NETMAP */
 
 	ice_alloc_rx_bufs(ring, num_bufs);
