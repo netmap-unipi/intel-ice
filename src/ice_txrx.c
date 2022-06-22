@@ -423,16 +423,6 @@ void ice_clean_rx_ring(struct ice_ring *rx_ring)
 	if (!rx_ring->rx_buf)
 		return;
 
-#ifdef DEV_NETMAP
-    if (rx_ring->netdev) {
-        int dummy, nm_irq;
-        nm_irq = netmap_rx_irq(rx_ring->netdev, rx_ring->q_index, &dummy);
-        if (nm_irq != NM_IRQ_PASS) {
-            return;
-        }
-    }
-#endif /* DEV_NETMAP */
-
 #ifdef HAVE_AF_XDP_ZC_SUPPORT
 	if (rx_ring->xsk_pool) {
 		ice_xsk_clean_rx_ring(rx_ring);
@@ -1643,6 +1633,16 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
 	struct xdp_buff xdp;
 #endif
 	bool failure;
+
+#ifdef DEV_NETMAP
+    if (rx_ring->netdev) {
+        int dummy, nm_irq;
+        nm_irq = netmap_rx_irq(rx_ring->netdev, rx_ring->q_index, &dummy);
+        if (nm_irq != NM_IRQ_PASS) {
+            return 1;
+        }
+    }
+#endif /* DEV_NETMAP */
 
 #ifndef CONFIG_ICE_USE_SKB
 #ifdef HAVE_XDP_SUPPORT
