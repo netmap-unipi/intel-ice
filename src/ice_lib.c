@@ -10,12 +10,6 @@
 #include "ice_vsi_vlan_ops.h"
 #include "ice_irq.h"
 
-#if defined(CONFIG_NETMAP) || defined(CONFIG_NETMAP_MODULE)
-#define NETMAP_ICE_LIB
-#include <ice_netmap_linux.h>
-#endif
-
-
 /**
  * ice_vsi_type_str - maps VSI type enum to string equivalents
  * @vsi_type: VSI type enum
