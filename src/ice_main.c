@@ -103,6 +103,12 @@ static unsigned long fwlog_events; /* no enabled events by default */
 module_param(fwlog_events, ulong, 0644);
 MODULE_PARM_DESC(fwlog_events, "FW events to log (32-bit mask)\n");
 
+#if defined(CONFIG_NETMAP) || defined(CONFIG_NETMAP_MODULE)
+#define NETMAP_ICE_LIB
+#include <ice_netmap_linux.h>
+#endif
+
+
 static struct workqueue_struct *ice_wq;
 
 static const struct net_device_ops ice_netdev_recovery_ops;
@@ -6169,6 +6175,9 @@ probe_done:
 		dev_warn(dev, "Aux drivers are not supported on this device\n");
 	}
 
+#ifdef DEV_NETMAP
+	ice_netmap_attach(pf);
+#endif
 	return 0;
 
 	/* Unwind non-managed device resources, etc. if something failed */
@@ -6278,6 +6287,10 @@ static void ice_remove(struct pci_dev *pdev)
 
 	if (!pf)
 		return;
+
+#ifdef DEV_NETMAP
+	ice_netmap_detach(pf);
+#endif /* DEV_NETMAP */
 
 	/* ICE_PREPPED_RECOVERY_MODE is set when the up and running
 	 * driver transitions to recovery mode. If this is not set
