@@ -2820,10 +2820,6 @@ ice_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi,
 	if (!vsi->agg_node)
 		ice_set_agg_vsi(vsi);
 
-#ifdef DEV_NETMAP
-    ice_netmap_attach(vsi);
-#endif
-
 	return vsi;
 
 unroll_clear_rings:
@@ -3172,9 +3168,6 @@ int ice_vsi_release(struct ice_vsi *vsi)
 	 */
 	if (vsi->netdev && !ice_is_reset_in_progress(pf->state) &&
 	    (test_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state))) {
-#ifdef DEV_NETMAP
-        netmap_detach(vsi->netdev);
-#endif
 		unregister_netdev(vsi->netdev);
 		clear_bit(ICE_VSI_NETDEV_REGISTERED, vsi->state);
 
