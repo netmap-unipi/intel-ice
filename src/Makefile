@@ -221,7 +221,7 @@ ifneq (${DDP_PKG_ORIGIN},)
 endif
 
 mandocs_install: all
-	install -D -m 644 ${DRIVER}.${MANSECTION}.gz ${INSTALL_MOD_PATH}/${MANDIR}/man${MANSECTION}/${DRIVER}.${MANSECTION}.gz
+	##install -D -m 644 ${DRIVER}.${MANSECTION}.gz ${INSTALL_MOD_PATH}/${MANDIR}/man${MANSECTION}/${DRIVER}.${MANSECTION}.gz
 
 # After installing all the files, perform necessary work to ensure the system
 # will use the new modules. This includes running depmod to update module
