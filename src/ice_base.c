@@ -905,7 +905,7 @@ ice_vsi_cfg_txq(struct ice_vsi *vsi, struct ice_ring *tx_ring,
 		tx_ring->txq_teid = le32_to_cpu(txq->q_teid);
     
 #ifdef DEV_NETMAP
-	ice_netmap_configure_tx_ring(ring);
+	ice_netmap_configure_tx_ring(tx_ring);
 #endif /* DEV_NETMAP */
 
 	return 0;
