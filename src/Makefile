@@ -97,11 +97,11 @@ ice$(NETMAP_DRIVER_SUFFIX)-y := ice_main.o	\
 	 ice_ieps.o		\
 	 ice_gnss.o		\
 	 ice_ethtool.o
-ice-$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_NET_DEVLINK:m=y) += ice_devlink.o ice_fw_update.o
-ice-$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_NET_DEVLINK:m=y) += ice_eswitch.o ice_repr.o
-ice-$(NETMAP_DRIVER_SUFFIX)-y += ice_aux_support.o
-ice-$(NETMAP_DRIVER_SUFFIX)-y += ice_idc.o
-ice-$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_DEBUG_FS) += ice_debugfs.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_NET_DEVLINK:m=y) += ice_devlink.o ice_fw_update.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_NET_DEVLINK:m=y) += ice_eswitch.o ice_repr.o
+ice$(NETMAP_DRIVER_SUFFIX)-y += ice_aux_support.o
+ice$(NETMAP_DRIVER_SUFFIX)-y += ice_idc.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_DEBUG_FS) += ice_debugfs.o
 
 ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_PCI_IOV) +=		\
 	ice_dcf.o			\
@@ -118,11 +118,11 @@ ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_PCI_IOV) +=		\
 ifneq (${ENABLE_SIOV_SUPPORT},)
 ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_VFIO_MDEV:m=y) += ice_vdcm.o ice_siov.o
 endif
-ice-$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_PTP_1588_CLOCK:m=y) += ice_ptp.o ice_ptp_hw.o
-ice-$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
-ice-$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_RFS_ACCEL) += ice_arfs.o
-ice-$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_XDP_SOCKETS) += ice_xsk.o
-ice-$(NETMAP_DRIVER_SUFFIX)-y += kcompat.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_PTP_1588_CLOCK:m=y) += ice_ptp.o ice_ptp_hw.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_RFS_ACCEL) += ice_arfs.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_XDP_SOCKETS) += ice_xsk.o
+ice$(NETMAP_DRIVER_SUFFIX)-y += kcompat.o
 # Use kcompat pldmfw.c if kernel does not provide CONFIG_PLDMFW
 ifndef CONFIG_PLDMFW
 ice$(NETMAP_DRIVER_SUFFIX)-y += kcompat_pldmfw.o
@@ -134,19 +134,19 @@ endif
 # Use kcompat GNSS if kernel doesn't provide it
 ifneq (${CONFIG_GNSS}, y)
 ifneq (${CONFIG_GNSS}, m)
-ice-y += kcompat_gnss.o
+ice$(NETMAP_DRIVER_SUFFIX)-y += kcompat_gnss.o
 endif
 endif
 
 ifeq (${CONFIG_SUSE_KERNEL}, y)
-ice-y += kcompat_gnss.o
+ice$(NETMAP_DRIVER_SUFFIX)-y += kcompat_gnss.o
 endif
 
 ifneq (${ENABLE_LM_SUPPORT},)
 obj-$(CONFIG_VFIO_PCI_CORE:y=m) += ice-vfio-pci.o
 
-ice-vfio-pci-y := ice_vfio_pci.o
-ice-$(CONFIG_VFIO_PCI_CORE:m=y) += ice_migration.o
+ice$(NETMAP_DRIVER_SUFFIX)-vfio-pci-y := ice_vfio_pci.o
+ice$(NETMAP_DRIVER_SUFFIX)-$(CONFIG_VFIO_PCI_CORE:m=y) += ice_migration.o
 endif
 
 
